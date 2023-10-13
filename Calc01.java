@@ -1,5 +1,6 @@
 
 import java.util.*;
+import java.text.DecimalFormat;
 
 public class Calc01{
 
@@ -214,9 +215,10 @@ public class Calc01{
       int curlyOn = 0;
       int bracketOn = 0;
       
-      if(!parced.peek().equals("-") && (signs.contains(parced.peek()) || parced.peek().equals(")") || parced.peek().equals("}")))
+      if((!parced.peek().equals("-") && !parced.peek().equals("+")) && (signs.contains(parced.peek()) || parced.peek().equals(")") || parced.peek().equals("}"))){
+         System.out.println("Inapproprait start to the expression");
          return err;//if the experation starts inappropraitly 
-            
+      }     
       while(!parced.isEmpty()){
          String temp = parced.poll();
          
@@ -237,6 +239,7 @@ public class Calc01{
                
                }
             }else{
+               System.out.println("A problem occured with your operator usage");
                return err;
             }
          }   
@@ -245,6 +248,7 @@ public class Calc01{
             if(parced.isEmpty() || parced.peek().equals(")") || parced.peek().equals("}") || signs.contains(parced.peek())){
                postfix.push(temp);
             }else{
+               System.out.println("A digit must be followed by nothing, closed prenthisis, closed curly bracket, or an operator. \nExample: 8(2-3) is not supported.\n");
                return err;
             }
          }
@@ -254,6 +258,7 @@ public class Calc01{
                operator.push(temp);
                bracketOn++;
             }else{ //making sure the calc dont accept sin() or (*) or ()
+               System.out.println("A problem occured with \"(\" usage");
                return err;
             }
             
@@ -264,6 +269,7 @@ public class Calc01{
          if(temp.equals(")")){
             if(parced.isEmpty() || signs.contains(parced.peek()) || parced.peek().equals(")") || parced.peek().equals("}")){
                if(bracketOn==0){
+                  System.out.println("A problem occured with \")\" usage");
                   return err;
                }
                while(!operator.isEmpty()){
@@ -278,6 +284,7 @@ public class Calc01{
                }
                bracketOn--;
             }else{
+               System.out.println("A problem occured with \")\" usage");
                return err;
             }
          
@@ -295,6 +302,7 @@ public class Calc01{
                operator.push(temp);
                curlyOn++;
             }else{ //making sure the calc dont accept sin() or (*) or ()
+               System.out.println("A problem occured with \"{\" usage");
                return err;
             }
             
@@ -320,6 +328,7 @@ public class Calc01{
          if(temp.equals("}")){
             if(parced.isEmpty() || signs.contains(parced.peek()) || parced.peek().equals(")") || parced.peek().equals("}")){
                if(curlyOn==0){
+                  System.out.println("A problem occured with \"}\" usage");
                   return err;
                }
                while(!operator.isEmpty()){
@@ -334,6 +343,7 @@ public class Calc01{
                }
                curlyOn--;
             }else{
+               System.out.println("A problem occured with \"}\" usage");
                return err;
             }
          
@@ -341,28 +351,40 @@ public class Calc01{
          //dealing with sin cos tan cot ln and lg
          if(temp.equals("sin")){
             operator.push(temp);
-            if(!parced.peek().equals("(") && !parced.peek().equals("{") ) 
+            if(!parced.peek().equals("(") && !parced.peek().equals("{") ) {
+               System.out.println("Pleas use the following format --> sin(1)");
                return err;
+            }
          }else if(temp.equals("cos")){
             operator.push(temp);
-            if(!parced.peek().equals("(") && !parced.peek().equals("{")) 
+            if(!parced.peek().equals("(") && !parced.peek().equals("{") ) {
+               System.out.println("Pleas use the following format --> cos(1)");
                return err;
+            }
          }else if(temp.equals("tan")){
             operator.push(temp);
-            if(!parced.peek().equals("(") && !parced.peek().equals("{")) 
+            if(!parced.peek().equals("(") && !parced.peek().equals("{") ) {
+               System.out.println("Pleas use the following format --> tan(1)");
                return err;
+            }
          }else if(temp.equals("cot")){
             operator.push(temp);
-            if(!parced.peek().equals("(") && !parced.peek().equals("{")) 
+            if(!parced.peek().equals("(") && !parced.peek().equals("{") ) {
+               System.out.println("Pleas use the following format --> cot(1)");
                return err;
+            }
          }else if(temp.equals("ln")){
             operator.push(temp);
-            if(!parced.peek().equals("(") && !parced.peek().equals("{")) 
+            if(!parced.peek().equals("(") && !parced.peek().equals("{") ) {
+               System.out.println("Pleas use the following format --> ln(1)");
                return err;
+            }
          }else if(temp.equals("lg")){
             operator.push(temp);
-            if(!parced.peek().equals("(") && !parced.peek().equals("{")) 
+            if(!parced.peek().equals("(") && !parced.peek().equals("{") ) {
+               System.out.println("Pleas use the following format --> lg(1)");
                return err;
+            }
          }
       
       
@@ -409,7 +431,7 @@ public class Calc01{
             double a = elements.pop();
             double b = 0;
             if(!elements.isEmpty()){
-                b = elements.pop();
+               b = elements.pop();
             }
             double r = 0;
             if(temp.equals("+")){
@@ -471,25 +493,32 @@ public class Calc01{
          Scanner keyboard = new Scanner(System.in);
          input = keyboard.nextLine();
          input = input.replace(" ","");
-         if(input.equals("stop")){
+         input = input.toLowerCase();
+         if(input.contains("stop")){
             System.out.println("Thank you for using my calculator");
-            continue;
+            break;
          }
          Queue<String> parced = parce(input);
-         System.out.println(parced);
+         //System.out.println(parced);
          if(parced.isEmpty()){
             System.out.println("Invalid input");
             continue;
          }
          Stack<String> postfix = new Stack<>();
          postfix = RPN(parced);
-         System.out.println(postfix);
+         //System.out.println(postfix);
          if(postfix.peek().equals("error")){
             System.out.println("Invalid input");
             continue;
          }
-         System.out.println("Result: " + evaluate(postfix));
-         
+         DecimalFormat df = new DecimalFormat("0.#############");
+         double r = evaluate(postfix);
+         String result = df.format(r);
+         if(Double.isInfinite(r)){
+            System.out.println("Result: " + r);
+         }else{
+            System.out.println("Result: " + result);
+         }
       
       }
    
